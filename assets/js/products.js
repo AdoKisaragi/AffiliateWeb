@@ -1,14 +1,38 @@
 (function(){
   "use strict";
-  const products=(window.CHOICE_LAB_PRODUCTS||[]).filter(p=>p.published);
+  const config=window.CHOICE_LAB_CONFIG||{affiliatePrograms:{}};
+  const products=(window.CHOICE_LAB_PRODUCTS||[]).filter(p=>p.published&&p.image&&p.image.rightsConfirmed);
   const categories=window.CHOICE_LAB_CATEGORIES||[];
+  const fallbackImage="assets/images/common/no-image.svg";
+  const productImage=p=>`<img src="${p.image.src}" width="520" height="390" loading="lazy" alt="${p.image.alt}" onerror="this.onerror=null;this.src='${fallbackImage}'">`;
   const categoryName=id=>(categories.find(c=>c.id===id)||{}).name||id;
-  const externalNotice='<p class="price-notice">リンク先は外部の販売サイトです。価格や在庫などの最新情報は販売ページでご確認ください。</p>';
-  const links=p=>`<div class="shop-links"><a class="shop" href="${p.storeLinks.retailer}" rel="sponsored nofollow">Amazonで商品情報を見る</a><a class="shop" href="${p.storeLinks.partner}" rel="sponsored nofollow">販売ページを見る</a><a class="shop" href="${p.officialUrl}">公式情報を確認する</a></div>${externalNotice}`;
+  const affiliateButtons=p=>{
+    const enabled=Object.entries(p.affiliateLinks||{}).filter(([key,link])=>config.affiliatePrograms[key]?.enabled&&link.enabled&&link.url);
+    if(!enabled.length)return "";
+    const notice=enabled.length===1&&enabled[0][0]==="rakuten"?"リンク先は楽天市場の販売ページです。価格、在庫、送料、ポイント還元、商品仕様などの最新情報は販売ページでご確認ください。":"リンク先は外部の販売サイトです。価格、在庫、送料、商品仕様などの最新情報は各販売ページでご確認ください。";
+    return `<div class="affiliate-cta"><div class="shop-links">${enabled.map(([key,link])=>`<a class="shop shop-${key}" href="${link.url}" rel="sponsored nofollow">${link.label}</a>`).join("")}</div><p class="price-notice">${notice}</p><p class="ad-note">上記リンクはアフィリエイト広告です。</p></div>`;
+  };
+  const officialLink=p=>p.officialUrl?`<a class="text-link" href="${p.officialUrl}">公式情報を確認する →</a>`:"";
+  const suppliedAd=p=>p.adFile?`<section class="section compact"><h2>7. 販売情報</h2><div class="ad-label">広告</div><div class="supplied-ad"><iframe src="${p.adFile}" title="${p.name}の広告" loading="lazy" scrolling="no"></iframe></div></section>`:"";
+  const enableExternalAdLinks=iframe=>{
+    const updateLinks=()=>{
+      try{
+        iframe.contentDocument?.querySelectorAll("a[href]").forEach(link=>{
+          link.target="_blank";
+        });
+      }catch(error){
+        console.warn("広告リンクの設定を更新できませんでした。",error);
+      }
+    };
+    iframe.addEventListener("load",updateLinks);
+    updateLinks();
+  };
   const specs=(p,limit=3)=>p.specifications.slice(0,limit).map(s=>`<div><dt>${s.label}</dt><dd>${s.value||"情報未設定"}</dd></div>`).join("");
-  const card=p=>`<article class="product-card"><div class="product-media"><img src="${p.image}" width="520" height="390" loading="lazy" alt="${p.name}のオリジナルプレースホルダー画像"></div><div class="product-body"><div class="eyebrow">${categoryName(p.category)} / ${p.manufacturer}</div><h3>${p.name}</h3><p class="editor-comment"><strong>商品情報</strong>${p.shortDescription}</p><dl class="spec-pills">${specs(p)}</dl><a class="button button-secondary" href="product-detail.html?id=${p.id}">商品情報を確認する</a>${links(p)}<p class="ad-note">販売サイトへのリンクはアフィリエイト広告です。</p></div></article>`;
+  const card=p=>`<article class="product-card"><div class="product-media">${productImage(p)}</div><div class="product-body"><div class="eyebrow">${categoryName(p.category)} / ${p.manufacturer}</div><h3>${p.name}</h3><p class="editor-comment"><strong>短い特徴</strong>${p.shortDescription}</p><p><strong>確認したいポイント：</strong>${p.considerations[0]}</p><p><strong>向いている可能性がある用途：</strong>${p.recommendedFor[0]}</p><a class="button button-secondary" href="product-detail.html?id=${p.id}">商品詳細を見る</a>${affiliateButtons(p)}</div></article>`;
   const list=document.querySelector("[data-product-list]");
   if(list){
+    document.querySelector(".page-header .lead").textContent="カテゴリーや利用目的から、比較したい商品情報を絞り込めます。";
+    document.querySelector(".result-bar small").textContent="掲載商品";
     const form=document.querySelector("[data-filters]");
     const count=document.querySelector("[data-result-count]");
     const categorySelect=form.elements.category;
@@ -23,11 +47,11 @@
       const config=categories.find(c=>c.id===category);
       document.querySelector("[data-category-filter-note]").textContent=config?`このカテゴリーで確認したい項目：${config.filters.join("・")}`:"カテゴリーを選ぶと、カテゴリー固有の確認項目を表示します。";
     };
-    const applyQuery=()=>{["feature","tag"].forEach(name=>{const value=query.get(name);if(value&&form.elements[name])form.elements[name].value=value;});};
+    const applyQuery=()=>{["subCategory","feature","tag"].forEach(name=>{const value=query.get(name);if(value&&form.elements[name])form.elements[name].value=value;});};
     const render=()=>{
       const f=new FormData(form);let result=products.filter(p=>(!f.get("category")||p.category===f.get("category"))&&(!f.get("subCategory")||p.subCategory===f.get("subCategory"))&&(!f.get("manufacturer")||p.manufacturer===f.get("manufacturer"))&&(!f.get("purpose")||p.recommendedFor.includes(f.get("purpose")))&&(!f.get("feature")||p.features.includes(f.get("feature")))&&(!f.get("tag")||p.tags.includes(f.get("tag"))));
       result.sort((a,b)=>f.get("sort")==="updated"?b.updatedAt.localeCompare(a.updatedAt):f.get("sort")==="name"?a.name.localeCompare(b.name,"ja"):Number(b.featured)-Number(a.featured));
-      count.textContent=`${result.length}件の商品`;list.innerHTML=result.length?result.map(card).join(""):'<div class="empty-state"><h2>条件に合う商品がありません</h2><p>条件を減らしてお試しください。</p></div>';
+      count.textContent=`${result.length}件の商品`;list.innerHTML=result.length?result.map(card).join(""):'<div class="empty-state"><img src="assets/images/common/no-results.svg" width="360" height="220" alt="検索結果が見つからないことを表すイラスト"><h2>条件に合う商品がありません</h2><p>条件を減らしてお試しください。</p></div>';
     };
     categorySelect.addEventListener("change",()=>{updateOptions();render()});form.addEventListener("change",render);form.addEventListener("reset",()=>setTimeout(()=>{updateOptions();render()},0));updateOptions();applyQuery();render();
   }
@@ -45,10 +69,15 @@
   if(detail){
     const p=products.find(x=>x.id===new URLSearchParams(location.search).get("id"))||products[0];
     document.title=`${p.name}｜${categoryName(p.category)}｜CHOICE LAB`;
-    detail.innerHTML=`<div class="detail-hero"><div class="product-media"><img src="${p.image}" width="520" height="390" alt="${p.name}のオリジナルプレースホルダー画像"></div><div><div class="eyebrow">${categoryName(p.category)} / ${p.subCategory}</div><h1>${p.name}</h1><p class="lead">${p.description}</p>${links(p)}<p class="ad-note">販売サイトへのリンクはアフィリエイト広告です。</p></div></div>
-    <section class="section compact"><div class="two-column"><div><h2>商品の特徴</h2><ul class="check-list">${p.features.map(x=>`<li>${x}</li>`).join("")}</ul><h3>確認したいポイント</h3><ul>${p.advantages.map(x=>`<li>${x}</li>`).join("")}</ul></div><div class="caution-box"><h2>用途によって確認したい点</h2><ul>${p.considerations.map(x=>`<li>${x}</li>`).join("")}</ul></div></div></section>
-    <section class="section compact"><div class="two-column"><div><h2>向いている可能性がある人</h2><ul>${p.recommendedFor.map(x=>`<li>${x}</li>`).join("")}</ul></div><div><h2>ほかの商品も比較したい人</h2><ul>${p.notRecommendedFor.map(x=>`<li>${x}</li>`).join("")}</ul></div></div></section>
-    <section class="section compact"><h2>商品仕様</h2><div class="spec-table"><dl>${p.specifications.map(s=>`<div><dt>${s.label}</dt><dd>${s.value||"情報未設定"}</dd></div>`).join("")}</dl></div></section>
-    <section class="editorial-note"><h2>掲載情報と免責事項</h2><p>この商品はサイト構築用の架空サンプルです。実在商品の使用体験や購入者レビューではありません。商品情報は掲載時点の内容であり、内容を保証するものではありません。最新情報は販売ページとメーカー公式情報をご確認ください。</p><p>更新日：<time datetime="${p.updatedAt}">${p.updatedAt.replaceAll("-","/")}</time></p></section>`;
+    const detailAffiliate=affiliateButtons(p);
+    detail.innerHTML=`<div class="detail-hero"><div><div class="product-media">${productImage(p)}</div>${p.image.isProductPhoto===false?'<p class="image-disclaimer">画像は商品の用途をイメージした当サイト独自のイラストです。実際の商品とは異なります。</p>':""}</div><div><div class="eyebrow">${categoryName(p.category)} / ${p.subCategory}</div><h1>${p.name}</h1><p class="lead">${p.description}</p>${officialLink(p)}</div></div>
+    <section class="section compact"><h2>1. 商品の特徴</h2><ul class="check-list">${p.features.map(x=>`<li>${x}</li>`).join("")}</ul></section>
+    <section class="section compact"><h2>2. 商品仕様</h2><div class="spec-table"><dl>${p.specifications.map(s=>`<div><dt>${s.label}</dt><dd>${s.value||"情報未設定"}</dd></div>`).join("")}</dl></div></section>
+    <section class="section compact"><h2>3. 確認したいポイント</h2><ul>${p.advantages.map(x=>`<li>${x}</li>`).join("")}</ul></section>
+    <section class="section compact"><h2>4. 向いている可能性がある人</h2><ul>${p.recommendedFor.map(x=>`<li>${x}</li>`).join("")}</ul></section>
+    <section class="section compact caution-box detail-caution"><h2>5. 用途によって注意したい点</h2><ul>${p.considerations.map(x=>`<li>${x}</li>`).join("")}</ul><p>ほかの商品も比較したい人：${p.notRecommendedFor.join("、")}</p></section>
+    <section class="editorial-note"><h2>6. 最新情報と免責事項</h2><p>${p.adFile?"商品情報は公開されている販売情報をもとに整理しており、当サイトによる使用体験や購入者レビューではありません。":"この商品はサイト構築用の架空サンプルです。実在商品の使用体験や購入者レビューではありません。"} 商品情報は掲載時点の内容であり、内容を保証するものではありません。最新情報は楽天市場の販売ページとメーカー公式情報をご確認ください。</p><p>更新日：<time datetime="${p.updatedAt}">${p.updatedAt.replaceAll("-","/")}</time></p></section>
+    ${p.adFile?suppliedAd(p):(detailAffiliate?`<section class="section compact"><h2>7. 販売ページ</h2>${detailAffiliate}</section>`:"")}`;
+    detail.querySelectorAll(".supplied-ad iframe").forEach(enableExternalAdLinks);
   }
 })();

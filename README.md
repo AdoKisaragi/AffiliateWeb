@@ -53,24 +53,99 @@ specifications: [
 
 `data/articles.js` にカテゴリー、記事種別、タイトル、説明、更新日、リンク先を追加します。トップページとカテゴリーページへ反映されます。個別記事ページを増やす場合は既存の `guide.html` を基に作成し、記事URLを設定します。
 
-## 広告リンク
+## アフィリエイト設定
 
-`storeLinks.retailer` と `storeLinks.partner` を、登録済みサイト向けに各管理画面で発行した正規リンクへ変更します。短縮URLや独自リダイレクトは使用しません。固定価格を表示せず、リンク付近の広告表記と外部販売サイトへの案内を維持してください。
+現在はA8.netを通じて楽天市場の商品広告を掲載しています。全体表記は `assets/js/site.js` 冒頭の `CHOICE_LAB_CONFIG` で管理します。
 
-Amazonの商品画像、ロゴ、カスタマーレビュー、販売ページのスクリーンショットを保存・転載しないでください。A8.netの広告は登録・承認されたサイトだけに掲載し、広告素材を加工しないでください。
+```js
+affiliatePrograms: {
+  rakuten: { enabled: true, displayName: "A8.net（楽天市場の商品広告）" },
+  amazon: { enabled: false, displayName: "Amazon" },
+  yahoo: { enabled: false, displayName: "Yahoo!ショッピング" }
+}
+```
+
+共通の広告開示文も同じ設定にあります。現在参加していないプログラムを `enabled: true` にしないでください。
+
+## 楽天アフィリエイトURLを登録する
+
+`data/products.js` の各商品にある `affiliateLinks.rakuten` を編集します。
+
+```js
+rakuten: {
+  enabled: true,
+  url: "管理画面で発行した正規URL",
+  label: "楽天市場で商品情報を見る"
+}
+```
+
+`enabled` が `true` で、`url` が空でない場合だけボタンが表示されます。現在の架空商品はすべてURLが空のため、楽天ボタンは表示されません。
+
+## A8.net発行HTML広告
+
+発行済みHTML広告は `affiliate-ads/` に商品別ファイルとして保存します。広告コードはタグ、URL、画像、表示文、価格、計測用画像を含めて変更しないでください。商品データの `adFile` に対象ファイルを指定すると、商品詳細ページの「広告」ラベル直下へ読み込まれます。
+
+```js
+adFile: "affiliate-ads/anker-323-charger.html"
+```
+
+一覧ページには広告HTMLを表示せず、商品詳細へのリンクだけを掲載します。広告の見た目を調整するときは、`assets/css/styles.css` の `.supplied-ad` など外側の要素だけを編集してください。
+
+楽天アフィリエイトで生成されたURLやHTMLソースを許可なく加工せず、短縮URLや独自リダイレクトも使用しないでください。リンク先が楽天市場であることが分かるラベルを維持します。
+
+## 将来Amazonを追加する
+
+Amazonアソシエイトへの参加・サイト登録が完了してから、次の作業を行います。
+
+1. `assets/js/site.js` の `affiliatePrograms.amazon.enabled` を `true` にする
+2. 各商品の `affiliateLinks.amazon.enabled` を `true` にする
+3. `affiliateLinks.amazon.url` へ正規リンクを登録する
+4. プライバシーポリシーと広告掲載ポリシーにAmazon所定の開示文を追加する
+5. Amazonへ登録したサイトURLと運営者名を再確認する
+
+URLが空の場合は、設定を有効にしてもボタンは表示されません。Amazonロゴや商品画像を独自に追加・転載しないでください。
+
+## 商品画像の権利管理
+
+商品画像は次の形式で管理します。
+
+```js
+image: {
+  src: "assets/images/product-placeholder.svg",
+  alt: "商品のイメージ画像",
+  sourceType: "original-placeholder",
+  rightsConfirmed: true
+}
+```
+
+`rightsConfirmed: false` の商品は一覧や詳細ページへ表示されません。楽天市場の商品ページから画像、レビュー、スクリーンショットをコピーしないでください。正式に提供された広告素材を利用する場合は楽天の生成コードとガイドラインに従い、素材を許可なく加工しないでください。
 
 ## 公開前チェック
 
 1. 架空の商品・仕様・運営者情報を確認済みの実情報へ変更
-2. `example.com` のダミーリンクを正規リンクへ変更
+2. 楽天アフィリエイト管理画面で発行した正規URLを登録
 3. 公開URL、OGP、`robots.txt`、`sitemap.xml` を更新
-4. Amazon参加者名と登録サイトURLを確認
-5. A8.netのサイト登録と広告主ごとの提携条件を確認
-6. 実際に使用していない商品へ体験談を記載していないか確認
-7. 固定価格、在庫、架空レビュー、誇大表現がないか確認
-8. お問い合わせフォームの送信先を設定
-9. PC、タブレット、スマートフォンで表示とキーボード操作を確認
+4. 楽天アフィリエイトへ公開サイトを登録し、HTTPSで公開
+5. 実際に使用していない商品へ体験談を記載していないか確認
+6. 固定価格、送料、在庫、ポイント、架空レビュー、誇大表現がないか確認
+7. お問い合わせフォームの送信先を設定
+8. PC、タブレット、スマートフォンで表示とキーボード操作を確認
 
 ## 公開
 
 GitHub PagesではリポジトリのSettings → Pagesから公開ブランチを指定します。レンタルサーバーではファイル一式を公開ディレクトリへアップロードできます。ビルド作業は不要です。
+
+## オリジナル画像の追加・差し替え
+
+サイト独自の画像は `assets/images/` 以下を用途別に管理します。カテゴリー画像は `data/categories.js` の `image` と `imageAlt`、商品詳細用の用途イラストは `data/products.js` 末尾の `usageBySubcategory` で指定します。
+
+新しいカテゴリー画像を追加する場合は、`assets/images/categories/` にSVGを保存し、カテゴリーデータへ次の2項目を追加してください。
+
+```js
+image: "assets/images/categories/example.svg",
+imageAlt: "カテゴリーの内容を具体的に表す代替テキスト"
+```
+
+商品詳細用画像を追加する場合は `assets/images/products/usage/` に保存し、`usageBySubcategory` にサブカテゴリー名、`src`、`alt` を追加します。実在商品の写真や外観の再現には使わず、用途を説明するオリジナルイラストにしてください。`isProductPhoto: false` の画像には、実際の商品と異なる旨の注記が自動表示されます。
+
+画像読み込みに失敗した場合は `assets/images/common/no-image.svg` を表示します。この処理はサイト側の画像だけが対象で、`affiliate-ads/` 内のA8.net広告素材には適用しません。A8.net発行HTMLは編集しないでください。
