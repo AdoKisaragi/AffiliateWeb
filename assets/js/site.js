@@ -36,10 +36,10 @@ window.CHOICE_LAB_CONFIG = {
   if (footer) {
     footer.innerHTML = `<footer class="site-footer"><div class="container footer-grid">
       <div><a class="brand brand-footer" href="${base}index.html"><span class="brand-mark">C</span><span>CHOICE LAB</span></a><p>暮らしに合う商品選びを、もっとわかりやすく。</p><p class="footer-description">家電、ガジェット、日用品、防災用品など、暮らしに役立つ商品を整理・比較する商品情報メディアです。</p><p class="muted">商品情報は掲載時点の公開情報をもとに整理しています。</p></div>
-      <nav aria-label="フッターメニュー"><h2>コンテンツ</h2>${link("index.html#categories", "カテゴリー")}${link("products.html", "商品一覧")}${link("ranking.html", "比較記事")}${link("guide.html", "選び方ガイド")}${link("index.html#articles", "新着記事")}</nav>
+      <nav aria-label="フッターメニュー"><h2>コンテンツ</h2>${link("index.html", "ホーム")}${link("products.html", "商品を探す")}${link("index.html#categories", "カテゴリー")}${link("guide.html", "選び方ガイド")}${link("index.html#articles", "新着記事")}</nav>
       <nav aria-label="運営情報"><h2>運営情報</h2>${link("about.html", "運営者情報")}${link("advertising-policy.html", "広告ポリシー")}${link("privacy.html", "プライバシーポリシー")}${link("disclaimer.html", "免責事項")}</nav>
-      <nav aria-label="運営アカウント"><h2>運営アカウント</h2><a href="${instagram}" target="_blank" rel="noopener noreferrer">Instagram<span aria-hidden="true"> ↗</span></a>${link("contact.html", "お問い合わせ")}</nav>
-      </div><div class="container footer-operator"><p>CHOICE LABは、図解アイテム研究所が運営しています。図解を使った商品紹介や更新情報はInstagramでも発信しています。</p></div><div class="container associate-disclosure">${config.affiliateDisclosure} ${config.affiliateSupplement}</div><div class="container copyright">© 図解アイテム研究所</div></footer>`;
+      <nav aria-label="公式アカウント"><h2>公式アカウント</h2><a href="${instagram}" target="_blank" rel="noopener noreferrer" aria-label="図解アイテム研究所のInstagramを開く">Instagram<span aria-hidden="true"> ↗</span></a>${link("contact.html", "お問い合わせ")}</nav>
+      </div><div class="container footer-operator"><p>CHOICE LABは、図解アイテム研究所が運営しています。図解を使った商品紹介や更新情報はInstagramでも発信しています。</p></div><div class="container associate-disclosure">${config.affiliateDisclosure} ${config.affiliateSupplement}</div><div class="container copyright">© 2026 図解アイテム研究所</div></footer>`;
   }
   const canonicalUrl = `https://adokisaragi.github.io/AffiliateWeb/${location.pathname.split("/").pop() || "index.html"}${location.search}`;
   if (!document.querySelector('link[rel="canonical"]')) {
@@ -54,6 +54,25 @@ window.CHOICE_LAB_CONFIG = {
     card.content = "summary";
     document.head.append(card);
   }
+  const ensureMeta = (attribute, name, content) => {
+    let meta = document.querySelector(`meta[${attribute}="${name}"]`);
+    if (!meta) {
+      meta = document.createElement("meta");
+      meta.setAttribute(attribute, name);
+      document.head.append(meta);
+    }
+    if (!meta.content) meta.content = content;
+  };
+  const pageTitle = document.title;
+  const pageDescription = document.querySelector('meta[name="description"]')?.content || "暮らしに合う商品選びを分かりやすく整理するCHOICE LABです。";
+  const socialImage = "https://adokisaragi.github.io/AffiliateWeb/assets/images/hero/choice-lab-hero.svg";
+  ensureMeta("property", "og:title", pageTitle);
+  ensureMeta("property", "og:description", pageDescription);
+  ensureMeta("property", "og:url", canonicalUrl);
+  ensureMeta("property", "og:image", socialImage);
+  ensureMeta("name", "twitter:title", pageTitle);
+  ensureMeta("name", "twitter:description", pageDescription);
+  ensureMeta("name", "twitter:image", socialImage);
   document.querySelectorAll("[data-affiliate-programs]").forEach(container => {
     const names = Object.values(config.affiliatePrograms).filter(program => program.enabled).map(program => program.displayName);
     container.innerHTML = `<h2>現在利用しているアフィリエイトプログラム</h2><p>${names.join("、")}に関するアフィリエイトプログラムを利用しています。広告リンクを経由して商品を購入された場合、運営者に報酬が発生することがあります。</p>`;

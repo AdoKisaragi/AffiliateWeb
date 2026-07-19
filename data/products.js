@@ -125,5 +125,5 @@ window.CHOICE_LAB_PRODUCTS = [
     "スマホアクセサリー": { src: "assets/images/products/usage/smartphone-strap.svg", alt: "スマートフォンを落下から守る用途のイメージイラスト" },
     "イヤホン・オーディオ": { src: "assets/images/products/usage/audio-commute.svg", alt: "移動中に音楽を聴く場面のイメージイラスト" }
   };
-  return { ...product, image: { ...(usageBySubcategory[product.subCategory] || { src: "assets/images/common/no-image.svg", alt: "商品の用途を表す共通イラスト" }), type: "original-illustration", isProductPhoto: false, rightsConfirmed: true } };
+  return { ...product, publishedAt: product.publishedAt || product.updatedAt, handsOn: false, sourceType: "public-information", sourceNote: "メーカー公式情報、販売ページなどの公開情報", image: { ...(usageBySubcategory[product.subCategory] || { src: "assets/images/common/no-image.svg", alt: "商品の用途を表す共通イラスト" }), type: "original-illustration", isProductPhoto: false, rightsConfirmed: true } };
 });

@@ -67,8 +67,38 @@
   }
   const detail = document.querySelector("[data-product-detail]");
   if (detail) {
-    const p = products.find(x => x.id === new URLSearchParams(location.search).get("id")) || products[0];
+    const requestedId = new URLSearchParams(location.search).get("id");
+    const p = products.find(x => x.id === requestedId);
+    if (!p) {
+      document.title = "商品が見つかりません｜CHOICE LAB";
+      detail.innerHTML = `<section class="empty-state"><img src="${fallbackImage}" width="360" height="220" alt=""><h1>商品が見つかりません</h1><p>指定された商品は掲載されていないか、URLが変更された可能性があります。</p><div class="button-row"><a class="button" href="products.html">商品一覧へ戻る</a><a class="button button-secondary" href="index.html#categories">カテゴリーから探す</a></div></section>`;
+      return;
+    }
     document.title = `${p.name}｜${categoryName(p.category)}｜CHOICE LAB`;
+    const descriptionMeta = document.querySelector('meta[name="description"]');
+    if (descriptionMeta) descriptionMeta.content = `${p.name}の特徴、仕様、購入前に確認したいポイントを公開情報をもとに整理しています。`;
+    const canonicalUrl = `https://adokisaragi.github.io/AffiliateWeb/product-detail.html?id=${encodeURIComponent(p.id)}`;
+    const canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) canonical.href = canonicalUrl;
+    const setMeta = (selector, value) => {
+      let meta = document.querySelector(selector);
+      if (!meta) {
+        meta = document.createElement("meta");
+        const match = selector.match(/\[(property|name)="([^"]+)"\]/);
+        meta.setAttribute(match[1], match[2]);
+        document.head.append(meta);
+      }
+      meta.content = value;
+    };
+    setMeta('meta[property="og:title"]', `${p.name}｜CHOICE LAB`);
+    setMeta('meta[property="og:description"]', p.shortDescription);
+    setMeta('meta[property="og:url"]', canonicalUrl);
+    setMeta('meta[name="twitter:title"]', `${p.name}｜CHOICE LAB`);
+    setMeta('meta[name="twitter:description"]', p.shortDescription);
+    const structuredData = document.createElement("script");
+    structuredData.type = "application/ld+json";
+    structuredData.textContent = JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"ホーム","item":"https://adokisaragi.github.io/AffiliateWeb/"},{"@type":"ListItem","position":2,"name":"商品一覧","item":"https://adokisaragi.github.io/AffiliateWeb/products.html"},{"@type":"ListItem","position":3,"name":p.name,"item":canonicalUrl}]});
+    document.head.append(structuredData);
     const detailAffiliate = affiliateButtons(p);
     detail.innerHTML = `<div class="detail-hero"><div><div class="product-media">${productImage(p)}</div>${p.image.isProductPhoto === false ? '<p class="image-disclaimer">画像は商品の用途をイメージした当サイト独自のイラストです。実際の商品とは異なります。</p>' : ""}</div><div><div class="eyebrow">${categoryName(p.category)} / ${p.subCategory}</div><h1>${p.name}</h1><p class="lead">${p.description}</p>${officialLink(p)}</div></div>
     <section class="section compact"><h2>1. 商品の特徴</h2><ul class="check-list">${p.features.map(x => `<li>${x}</li>`).join("")}</ul></section>
@@ -76,7 +106,7 @@
     <section class="section compact"><h2>3. 確認したいポイント</h2><ul>${p.advantages.map(x => `<li>${x}</li>`).join("")}</ul></section>
     <section class="section compact"><h2>4. 向いている可能性がある人</h2><ul>${p.recommendedFor.map(x => `<li>${x}</li>`).join("")}</ul></section>
     <section class="section compact caution-box detail-caution"><h2>5. 用途によって注意したい点</h2><ul>${p.considerations.map(x => `<li>${x}</li>`).join("")}</ul><p>ほかの商品も比較したい人：${p.notRecommendedFor.join("、")}</p></section>
-    <section class="editorial-note"><h2>6. 最新情報と免責事項</h2><p>商品情報は公開されている販売情報をもとに整理しており、当サイトによる使用体験や購入者レビューではありません。商品情報は掲載時点の内容であり、内容を保証するものではありません。最新情報は楽天市場の販売ページとメーカー公式情報をご確認ください。</p><p>更新日：<time datetime="${p.updatedAt}">${p.updatedAt.replaceAll("-", "/")}</time></p></section>
+    <section class="editorial-note"><h2>6. 情報の確認方針</h2><dl class="trust-list"><div><dt>確認元</dt><dd>メーカー公式情報、販売ページなどの公開情報</dd></div><div><dt>実機確認</dt><dd>なし（実際の使用感を検証したレビューではありません）</dd></div><div><dt>公開日</dt><dd><time datetime="${p.publishedAt || p.updatedAt}">${(p.publishedAt || p.updatedAt).replaceAll("-", "/")}</time></dd></div><div><dt>更新日</dt><dd><time datetime="${p.updatedAt}">${p.updatedAt.replaceAll("-", "/")}</time></dd></div></dl><p>商品情報は掲載時点の内容です。最新の価格、在庫、仕様、販売条件は販売ページとメーカー公式情報をご確認ください。</p></section>
     ${p.adFile ? suppliedAd(p) : (detailAffiliate ? `<section class="section compact"><h2>7. 販売ページ</h2>${detailAffiliate}</section>` : "")}`;
     detail.querySelectorAll(".supplied-ad iframe").forEach(enableExternalAdLinks);
   }
