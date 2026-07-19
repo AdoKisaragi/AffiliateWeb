@@ -1,1 +1,63 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>商品を探す｜CHOICE LAB</title><meta name="description" content="カテゴリー、メーカー、利用目的、特徴、タグから商品情報を絞り込めます。"><meta property="og:title" content="商品を探す｜CHOICE LAB"><meta property="og:type" content="website"><link rel="stylesheet" href="assets/css/styles.css"></head><body><a class="skip-link" href="#main">本文へ移動</a><div data-site-header></div><main id="main"><header class="page-header"><div class="container"><nav class="breadcrumb"><a href="index.html">ホーム</a> / 商品を探す</nav><div class="eyebrow">PRODUCT FINDER</div><h1>暮らしの商品を探す</h1><p class="lead">カテゴリーや利用目的から、比較したい商品情報を絞り込めます。掲載商品は構築用の架空サンプルです。</p></div></header><section class="section"><div class="container content-layout"><form class="filters" data-filters><h2>条件を絞り込む</h2><div class="filter-group"><label for="category">カテゴリー</label><select id="category" name="category"><option value="">すべて</option></select></div><div class="filter-group"><label for="subCategory">サブカテゴリー</label><select id="subCategory" name="subCategory"></select></div><div class="filter-group"><label for="manufacturer">メーカー</label><select id="manufacturer" name="manufacturer"></select></div><div class="filter-group"><label for="purpose">利用目的</label><select id="purpose" name="purpose"></select></div><div class="filter-group"><label for="feature">特徴</label><select id="feature" name="feature"></select></div><div class="filter-group"><label for="tag">タグ</label><select id="tag" name="tag"></select></div><div class="filter-group"><label for="sort">並び替え</label><select id="sort" name="sort"><option value="featured">注目商品順</option><option value="updated">更新日が新しい順</option><option value="name">商品名順</option></select></div><p class="filter-note" data-category-filter-note></p><button type="reset">条件をリセット</button></form><div><div class="result-bar"><span class="result-count" data-result-count aria-live="polite"></span><small>架空サンプル商品</small></div><div class="product-list" data-product-list></div></div></div></section></main><div data-site-footer></div><script src="data/categories.js"></script><script src="data/products.js"></script><script src="assets/js/site.js"></script><script src="assets/js/products.js"></script></body></html>
+<!doctype html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>商品を探す｜CHOICE LAB</title>
+    <meta name="description" content="カテゴリー、メーカー、利用目的、特徴、タグから商品情報を絞り込めます。">
+    <meta property="og:title" content="商品を探す｜CHOICE LAB">
+    <meta property="og:type" content="website">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body><a class="skip-link" href="#main">本文へ移動</a>
+    <div data-site-header></div>
+    <main id="main">
+        <header class="page-header">
+            <div class="container">
+                <nav class="breadcrumb"><a href="index.html">ホーム</a> / 商品を探す</nav>
+                <div class="eyebrow">PRODUCT FINDER</div>
+                <h1>暮らしの商品を探す</h1>
+                <p class="lead">カテゴリーや利用目的から、公開情報をもとに整理した商品情報を絞り込めます。</p>
+            </div>
+        </header>
+        <section class="section">
+            <div class="container content-layout">
+                <form class="filters" data-filters>
+                    <h2>条件を絞り込む</h2>
+                    <div class="filter-group"><label for="category">カテゴリー</label><select id="category" name="category">
+                            <option value="">すべて</option>
+                        </select></div>
+                    <div class="filter-group"><label for="subCategory">サブカテゴリー</label><select id="subCategory"
+                            name="subCategory"></select></div>
+                    <div class="filter-group"><label for="manufacturer">メーカー</label><select id="manufacturer"
+                            name="manufacturer"></select></div>
+                    <div class="filter-group"><label for="purpose">利用目的</label><select id="purpose"
+                            name="purpose"></select></div>
+                    <div class="filter-group"><label for="feature">特徴</label><select id="feature"
+                            name="feature"></select></div>
+                    <div class="filter-group"><label for="tag">タグ</label><select id="tag" name="tag"></select></div>
+                    <div class="filter-group"><label for="sort">並び替え</label><select id="sort" name="sort">
+                            <option value="featured">注目商品順</option>
+                            <option value="updated">更新日が新しい順</option>
+                            <option value="name">商品名順</option>
+                        </select></div>
+                    <p class="filter-note" data-category-filter-note></p><button type="reset">条件をリセット</button>
+                </form>
+                <div>
+                    <div class="result-bar"><span class="result-count" data-result-count
+                            aria-live="polite"></span><small>掲載商品</small></div>
+                    <div class="product-list" data-product-list></div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div data-site-footer></div>
+    <script src="data/categories.js"></script>
+    <script src="data/products.js"></script>
+    <script src="assets/js/site.js"></script>
+    <script src="assets/js/products.js"></script>
+</body>
+
+</html>

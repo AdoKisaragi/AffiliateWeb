@@ -118,12 +118,12 @@ window.CHOICE_LAB_PRODUCTS = [
     shortDescription: "端末保持と簡易スタンド用途を確認したいスマホグリップです。", description: "ケース素材や取り付け位置との相性を確認して選びたいアクセサリーです。",
     image: { src: "assets/images/product-placeholder.svg", alt: "角丸正方形スマホグリップの商品情報用プレースホルダー", sourceType: "original-placeholder", rightsConfirmed: true }, features: ["スマホグリップ", "スタンド", "落下対策"], recommendedFor: ["端末の持ち方を安定させたい人"], notRecommendedFor: ["背面を平らに保ちたい人"], advantages: ["保持とスタンド用途を検討できる"], considerations: ["落下防止を保証するものではなく、接着面の適合確認が必要です"], specifications: [{ label: "商品種別", value: "スマホグリップ" }, { label: "形状", value: "角丸正方形" }], tags: ["スマホアクセサリー", "スマホグリップ"], articleType: "product", officialUrl: "", affiliateLinks: {}, adFile: "affiliate-ads/square-phone-grip.html", updatedAt: "2026-07-18", published: true, featured: false
   }
-].filter(product=>!product.id.startsWith("cl-")).map(product=>{
-  const usageBySubcategory={
-    "充電器":{src:"assets/images/products/usage/charger-desk.svg",alt:"デスク上でスマートフォンを充電しているイメージイラスト"},
-    "モバイルバッテリー":{src:"assets/images/products/usage/mobile-battery-outdoor.svg",alt:"外出先でスマートフォンへ給電しているイメージイラスト"},
-    "スマホアクセサリー":{src:"assets/images/products/usage/smartphone-strap.svg",alt:"スマートフォンを落下から守る用途のイメージイラスト"},
-    "イヤホン・オーディオ":{src:"assets/images/products/usage/audio-commute.svg",alt:"移動中に音楽を聴く場面のイメージイラスト"}
+].filter(product => !product.id.startsWith("cl-")).map(product => {
+  const usageBySubcategory = {
+    "充電器": { src: "assets/images/products/usage/charger-desk.svg", alt: "デスク上でスマートフォンを充電しているイメージイラスト" },
+    "モバイルバッテリー": { src: "assets/images/products/usage/mobile-battery-outdoor.svg", alt: "外出先でスマートフォンへ給電しているイメージイラスト" },
+    "スマホアクセサリー": { src: "assets/images/products/usage/smartphone-strap.svg", alt: "スマートフォンを落下から守る用途のイメージイラスト" },
+    "イヤホン・オーディオ": { src: "assets/images/products/usage/audio-commute.svg", alt: "移動中に音楽を聴く場面のイメージイラスト" }
   };
-  return {...product,image:{...(usageBySubcategory[product.subCategory]||{src:"assets/images/common/no-image.svg",alt:"商品の用途を表す共通イラスト"}),type:"original-illustration",isProductPhoto:false,rightsConfirmed:true}};
+  return { ...product, image: { ...(usageBySubcategory[product.subCategory] || { src: "assets/images/common/no-image.svg", alt: "商品の用途を表す共通イラスト" }), type: "original-illustration", isProductPhoto: false, rightsConfirmed: true } };
 });
