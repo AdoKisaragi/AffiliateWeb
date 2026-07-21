@@ -1,174 +1,123 @@
 # CHOICE LAB
 
-家電、ガジェット、日用品、防災用品などを扱う静的な総合商品比較・紹介メディアです。HTML / CSS / Vanilla JavaScriptのみで動作します。
+CHOICE LABは「通販・商品選び」と「アニメ・映画・ゲーム」の2つの専門メディアを持つ情報ブランドです。
 
 - 公開URL: `https://adokisaragi.github.io/AffiliateWeb/`
-- 運営者: 図解アイテム研究所
-- Instagram・お問い合わせ: `https://www.instagram.com/item.guide.jp/`
+- ブランド入口: `/portal.html`
+- Shopping: `/index.html`（既存URLを維持）
+- Entertainment: `/entertainment/`
+- 運営: 図解アイテム研究所
+- 連絡先: [Instagram](https://www.instagram.com/item.guide.jp/) のDM
 
-掲載商品は、A8.netから提供された広告情報および公開情報をもとに整理しています。固定価格、在庫、利用者レビューはサイト独自の本文には掲載しません。
+## 役割
 
-## 運営者・お問い合わせ設定
+- Shopping: 家電、ガジェット、日用品、防災・旅行用品などの商品比較と選び方
+- Entertainment: アニメ、映画、ゲームなどの作品情報、選び方、特集
 
-- 運営者名とサイトとの関係：`about.html` および `assets/js/site.js` のフッター
-- Instagram URL：`assets/js/site.js` の `instagram`、`about.html`、`contact.html`、各ポリシーページ
-- お問い合わせ導線：`contact.html` のInstagramリンク。サイト内に送信フォームは設置しません
+## ディレクトリ構成
 
-運営者名は「図解アイテム研究所」、お問い合わせ先は `https://www.instagram.com/item.guide.jp/` です。本名、住所、電話番号、個人メールアドレスは掲載しません。
+```text
+/
+├─ portal.html              ブランド入口
+├─ index.html               Shoppingトップ（既存）
+├─ entertainment/
+│  ├─ index.html            Entertainmentトップ
+│  └─ styles.css
+├─ assets/
+│  ├─ css/                  共通・各サイトのCSS
+│  ├─ js/                   共通ナビゲーション等
+│  └─ images/               オリジナルSVG・OGP
+├─ data/                    Shoppingの商品・カテゴリー・記事データ
+└─ affiliate-ads/           A8.net発行広告HTML
+```
+
+既存の商品、カテゴリー、記事URLを守るため、Shoppingはルート直下から移動していません。
 
 ## ローカル確認
 
-VS CodeのLive Serverで `index.html` を開きます。主要機能はHTMLの直接表示でも動作します。
+リポジトリのルートで静的HTTPサーバーを起動し、`portal.html`、`index.html`、`entertainment/` を確認します。例:
 
-## データ構成
-
-- `data/categories.js`: カテゴリー設定
-- `data/products.js`: 商品情報
-- `data/articles.js`: 記事情報
-
-JSONではなくJavaScriptデータを使用しているため、ローカルファイルとして開いた場合も `fetch` の制限を受けません。
-
-## カテゴリーを追加する
-
-`data/categories.js` に1件追加します。
-
-- `id`: URLに使う重複しない半角英数字
-- `name`: 表示名
-- `shortName`: 短い表示名
-- `description`: カテゴリー説明
-- `icon`: 自作図形内に表示する短い文字
-- `accent`: 補助アクセント色
-- `filters`: カテゴリー固有の確認項目
-
-追加後は `category.html?category=カテゴリーID` で表示できます。トップページのカテゴリーカードもデータから生成されます。
-
-初期カテゴリーはスマホ・ガジェット、パソコン周辺機器、生活家電、キッチン用品、日用品、収納用品、防災用品、旅行用品、カー用品、ペット用品、季節用品、在宅ワーク用品です。健康食品、医薬品、サプリメント、美容効果を訴求する商品は初期対象外です。
-
-## 商品を追加する
-
-`data/products.js` の既存商品を複製して編集します。主な共通項目は `id`、`name`、`slug`、`category`、`subCategory`、`manufacturer`、説明、画像、特徴、対象者、注意点、仕様、タグ、リンク、更新日、公開状態です。
-
-商品固有の仕様は次のような配列で追加します。
-
-```js
-specifications: [
-  { label: "素材", value: "確認した情報" },
-  { label: "本体サイズ", value: "確認した情報" }
-]
+```sh
+python -m http.server 8000
 ```
 
-カテゴリーによって項目数や内容を変えられます。確認できない項目は断定せず、`情報未設定` または `公式情報をご確認ください` とします。
+`http://localhost:8000/portal.html` を開いてください。`file://` よりHTTPサーバーでの確認を推奨します。
 
-価格、価格帯、参考価格、在庫、評価点、レビュー数を保存する項目は追加しないでください。
+## GitHub Pages公開
 
-## 選び方記事を追加する
+GitHubの Settings → Pages で、公開ブランチとルートディレクトリを指定します。公開後はサイトマップ、canonical、OGP URLが `https://adokisaragi.github.io/AffiliateWeb/` を向いていることを確認してください。
 
-`data/articles.js` にカテゴリー、記事種別、タイトル、説明、更新日、リンク先を追加します。トップページとカテゴリーページへ反映されます。個別記事ページを増やす場合は既存の `guide.html` を基に作成し、記事URLを設定します。
+## コンテンツの追加
 
-記事には、導入、結論、確認項目、用途別の目安、注意点、よくある失敗、まとめ、更新日、参考にした情報の種類を含めます。`url` は本文が存在するHTMLへ設定し、リンクだけの未完成記事は公開しません。関連商品・関連記事を増やす場合は、商品データのカテゴリーやタグと記事の `category` を一致させます。
+### Shopping記事
 
-## アフィリエイト設定
+既存記事HTMLを基に本文、title、description、構造化データ、更新日を設定し、`data/articles.js` に導線を追加します。
 
-現在はA8.netを通じて楽天市場の商品広告を掲載しています。全体表記は `assets/js/site.js` 冒頭の `CHOICE_LAB_CONFIG` で管理します。
+### 商品
 
-```js
-affiliatePrograms: {
-  rakuten: { enabled: true, displayName: "A8.net（楽天市場の商品広告）" },
-  amazon: { enabled: false, displayName: "Amazon" },
-  yahoo: { enabled: false, displayName: "Yahoo!ショッピング" }
+`data/products.js` の既存項目を基に、重複しない商品ID、商品情報、権利確認済み画像、リンクを追加します。既存の商品IDとURLパラメータは変更しません。
+
+### Entertainment記事
+
+`entertainment/` 内にHTMLを追加し、Entertainmentトップの記事カードと `sitemap.xml` にリンクを追加します。公式画像、場面写真、ポスター、スクリーンショットを許諾なく転載せず、オリジナルSVGまたは利用許諾が確認できる素材を使います。
+
+### アニメ作品
+
+`data/anime.json` に `title`、`thumbnail`、`rank`、`genre`、`description`、`affiliateUrl` を追加します。現在の画像配置に合わせ、画像は `assets/images/anime/` に1200×1499pxのWebP形式で保存し、JSONの画像パスとファイル名を一致させます。作品一覧と詳細は `entertainment/anime.js` がJSONから生成するため、HTMLへ作品情報を直接追加する必要はありません。
+
+#### アニメ詳細情報の更新
+
+詳細ページも `data/anime.json` から生成します。作品別HTMLは作成しません。
+
+- 概要: `shortDescription`（上部の短文）と `overview`（ネタバレなしの概要）
+- おすすめ: `recommendedFor` に3～5件の文字列を登録
+- 見どころ: `highlights` に `{ "title": "", "description": "" }` を登録
+- 基本情報: `season`、`broadcastStart`、`broadcastEnd`、`broadcastStatus`、`episodes`、`episodeDuration`、`studio`など、公式に確認できた項目だけを登録
+- スタッフ: `staff` に `{ "role": "", "name": "" }` を登録
+- キャスト: `cast` に `{ "character": "", "actor": "" }` を登録
+- 公式リンク: `officialLinks` に `{ "label": "", "url": "" }` を登録
+- 関連作品: `relatedTitles` に、サイト内に登録済みの正式タイトルを指定
+- 更新日: `updatedAt`、配信情報確認日: `streamingCheckedAt` を `YYYY-MM-DD` で登録
+
+配信サービスは `streamingServices` へ追加します。
+
+```json
+{
+  "name": "サービス名",
+  "type": "見放題",
+  "status": "配信中",
+  "startDate": "YYYY-MM-DD",
+  "updateSchedule": "毎週○曜日",
+  "freePeriod": "公式に確認できた場合のみ記載",
+  "exclusivity": "独占・先行など",
+  "officialUrl": "公式作品ページURL",
+  "affiliateUrl": "",
+  "isAffiliate": false,
+  "checkedAt": "YYYY-MM-DD",
+  "note": ""
 }
 ```
 
-共通の広告開示文も同じ設定にあります。現在参加していないプログラムを `enabled: true` にしないでください。
+見放題、レンタル、購入、期間限定無料、最新話無料、広告付き無料、独占配信、先行配信、配信予定、配信終了を区別してください。配信終了時は`status`を更新し、確認日も更新します。空欄項目は画面に表示されません。
 
-## 楽天アフィリエイトURLを登録する
+情報源はアニメ公式サイト、公式配信情報ページ、配信サービス公式作品ページ、放送局、出版社の順に優先します。まとめサイトや非公式Wikiだけを根拠に登録しません。配信情報は定期的に再確認してください。
 
-`data/products.js` の各商品にある `affiliateLinks.rakuten` を編集します。
+アフィリエイトURLを使う場合は`affiliateUrl`と`isAffiliate: true`を設定します。通常の公式リンクは`officialUrl`と`isAffiliate: false`を使用します。A8.net発行広告HTMLはタグ、URL、文言を含めて改変してはいけません。
 
-```js
-rakuten: {
-  enabled: true,
-  url: "管理画面で発行した正規URL",
-  label: "楽天市場で商品情報を見る"
-}
-```
+画像は`assets/images/anime/`へ1200×1499pxのWebPとして追加します。表示時も1200:1499を維持し、切り抜きや引き伸ばしを行いません。
 
-`enabled` が `true` で、`url` が空でない場合だけボタンが表示されます。URLが空の場合はボタンを表示しません。
+## サイト切り替えリンク
 
-## A8.net発行HTML広告
+共通切り替えバーとフッターのネットワーク導線は `assets/js/brand-network.js`、表示は `assets/css/brand-network.css` で管理します。Shoppingページはルート基準、Entertainmentページは一階層上への相対パスを使います。
 
-発行済みHTML広告は `affiliate-ads/` に商品別ファイルとして保存します。広告コードはタグ、URL、画像、表示文、価格、計測用画像を含めて変更しないでください。商品データの `adFile` に対象ファイルを指定すると、商品詳細ページの「広告」ラベル直下へ読み込まれます。
+## 広告の重要事項
 
-```js
-adFile: "affiliate-ads/anker-323-charger.html"
-```
+`affiliate-ads/` に保存したA8.net発行広告HTMLは、タグ、URL、画像、表示文言を含めて変更しないでください。広告掲載箇所では広告であることを明示し、最新の価格・提供状況は販売先で確認するよう案内します。
 
-一覧ページには広告HTMLを表示せず、商品詳細へのリンクだけを掲載します。広告の見た目を調整するときは、`assets/css/styles.css` の `.supplied-ad` など外側の要素だけを編集してください。
+## 画像・著作権
 
-楽天アフィリエイトで生成されたURLやHTMLソースを許可なく加工せず、短縮URLや独自リダイレクトも使用しないでください。リンク先が楽天市場であることが分かるラベルを維持します。
+Entertainmentでは既存作品のキャラクター、公式画像、場面写真、ポスター、ゲーム画面を権利確認なく使用しません。抽象的なオリジナルSVG、自作図解、許諾済み広告素材、公式の埋め込み機能を優先します。
 
-## 将来Amazonを追加する
+## OGP画像
 
-Amazonアソシエイトへの参加・サイト登録が完了してから、次の作業を行います。
-
-1. `assets/js/site.js` の `affiliatePrograms.amazon.enabled` を `true` にする
-2. 各商品の `affiliateLinks.amazon.enabled` を `true` にする
-3. `affiliateLinks.amazon.url` へ正規リンクを登録する
-4. プライバシーポリシーと広告掲載ポリシーにAmazon所定の開示文を追加する
-5. Amazonへ登録したサイトURLと運営者名を再確認する
-
-URLが空の場合は、設定を有効にしてもボタンは表示されません。Amazonロゴや商品画像を独自に追加・転載しないでください。
-
-## 商品画像の権利管理
-
-商品画像は次の形式で管理します。
-
-```js
-image: {
-  src: "assets/images/product-placeholder.svg",
-  alt: "商品のイメージ画像",
-  sourceType: "original-placeholder",
-  rightsConfirmed: true
-}
-```
-
-`rightsConfirmed: false` の商品は一覧や詳細ページへ表示されません。楽天市場の商品ページから画像、レビュー、スクリーンショットをコピーしないでください。正式に提供された広告素材を利用する場合は楽天の生成コードとガイドラインに従い、素材を許可なく加工しないでください。
-
-## 公開前チェック
-
-1. 商品名、仕様、運営者情報が確認済みの内容か確認
-2. 楽天アフィリエイト管理画面で発行した正規URLを登録
-3. 公開URL、OGP、`robots.txt`、`sitemap.xml` を更新
-4. 楽天アフィリエイトへ公開サイトを登録し、HTTPSで公開
-5. 実際に使用していない商品へ体験談を記載していないか確認
-6. 固定価格、送料、在庫、ポイント、架空レビュー、誇大表現がないか確認
-7. InstagramのDM導線と外部リンク属性を確認
-8. PC、タブレット、スマートフォンで表示とキーボード操作を確認
-9. 内部リンク、画像、CSS、JavaScriptに404がないか確認
-10. ブラウザ開発者ツールのConsoleとNetworkでサイト由来のエラーがないか確認
-11. push後にGitHub ActionsまたはPagesのデプロイ結果が成功しているか確認
-
-## 公開
-
-GitHub PagesではリポジトリのSettings → Pagesから公開ブランチを指定します。公開先はサブディレクトリ `/AffiliateWeb/` のため、`/assets/...` のようなドメインルート相対パスは使わず、ページ階層に合う `assets/...` または `../assets/...` を使います。ビルド作業は不要です。
-
-## CSS・JavaScriptのキャッシュ対策
-
-ルートHTMLのCSS・JavaScript・データスクリプトには、共通の `?v=20260719-2` を付けています。大きな更新を公開するときは、すべてのHTMLで同じバージョン値へ変更してください。
-
-push後に古い表示が残る場合は、最初に `Ctrl + Shift + R` で強制再読み込みします。改善しない場合は、ブラウザのサイト設定から `adokisaragi.github.io` のキャッシュ済みデータを削除し、GitHub Pagesの最新デプロイ時刻と読み込まれているファイルのバージョンをNetworkタブで確認します。
-
-## オリジナル画像の追加・差し替え
-
-サイト独自の画像は `assets/images/` 以下を用途別に管理します。カテゴリー画像は `data/categories.js` の `image` と `imageAlt`、商品詳細用の用途イラストは `data/products.js` 末尾の `usageBySubcategory` で指定します。
-
-新しいカテゴリー画像を追加する場合は、`assets/images/categories/` にSVGを保存し、カテゴリーデータへ次の2項目を追加してください。
-
-```js
-image: "assets/images/categories/new-category.svg",
-imageAlt: "カテゴリーの内容を具体的に表す代替テキスト"
-```
-
-商品詳細用画像を追加する場合は `assets/images/products/usage/` に保存し、`usageBySubcategory` にサブカテゴリー名、`src`、`alt` を追加します。実在商品の写真や外観の再現には使わず、用途を説明するオリジナルイラストにしてください。`isProductPhoto: false` の画像には、実際の商品と異なる旨の注記が自動表示されます。
-
-画像読み込みに失敗した場合は `assets/images/common/no-image.svg` を表示します。この処理はサイト側の画像だけが対象で、`affiliate-ads/` 内のA8.net広告素材には適用しません。A8.net発行HTMLは編集しないでください。
+`assets/images/og/` にブランド入口、Shopping、Entertainment用SVGがあります。差し替える場合は1200×630pxを基準にし、各ページの `og:image` とTwitter Cardを更新します。GitHub PagesやSNSの対応状況に応じてPNG版への変換も検討してください。
